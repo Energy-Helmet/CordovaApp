@@ -1,0 +1,2 @@
+# CordovaApp
+Android + Cordova + Bean
