@@ -24,7 +24,7 @@
     <script type="text/javascript">
       var messagesTemplate = _.template($('#messages-template').html());
 
-      var channel = document.location.search.slice(1);
+      var channel = 'helmetbro-test';
       (function loop() {
         $.get('https://energy-helmet.herokuapp.com/messages/' + channel).then(function(data) {
           $('#messages').html(messagesTemplate({ messages: data }));
