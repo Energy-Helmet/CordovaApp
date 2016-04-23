@@ -6,6 +6,14 @@
     <script src="./javascripts/jquery-2.2.3.min.js"></script>
     <script src="./javascripts/jquery.loadTemplate-1.5.7.min.js"></script>
 
+    <style type="text/css">
+      .slack_chat {
+        color: white; 
+        position: absolute; 
+        top: 20px;
+        transform: scaleY(-1);
+      }
+    </style>
 
   </head>
   <body onload="init();" style="margin: 0px">
@@ -15,7 +23,7 @@
 
     </div>
 
-    <div id="template-container" style="color: white; position: absolute; top: 20px;">
+    <div id="template-container" class="slack_chat">
     </div>
 
     <script>
@@ -60,6 +68,17 @@
              stage.update();
          }
       }
+
+
+      function position_slack_chat(){
+        var slack_chat_height = $("#template-container").height();
+        var new_height = screen_height - slack_chat_height;
+        $("#template-container").css("top", new_height + "px");
+      }
+
+      $(function(){
+        position_slack_chat();
+      });
     </script>
 
     <script id="messages-template" type="text/template">
@@ -82,6 +101,7 @@
           $('#template-container').html(messagesTemplate({ messages: data }));
 
           setTimeout(loop, 500);
+          position_slack_chat();
         });
       })();
     </script>
