@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="vendor/js/jquery.js"></script>
+    <script src="vendor/js/lodash.js"></script>
+    <link rel="stylesheet" href="vendor/css/bootstrap.css">
+    <link rel="stylesheet" href="style.css">
+    <script>$.support.cors = true;</script>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body style="background:black">
+    <div id="messages" style="color:white"></div>
+
+    <script id="messages-template" type="text/template">
+      <% messages.forEach(function(message) { %>
+        <div class="message">
+          <span class="from"><img src="<%= message.from.avatar %>" alt="<%= message.from.name %>" class="img-circle"></span>
+          <span class="message"><%- message.text %></span>
+        </div>
+      <% }); %>
+    </script>
+
+    <script type="text/javascript">
+      var messagesTemplate = _.template($('#messages-template').html());
+
+      var channel = document.location.search.slice(1);
+      channel     = 'helmetbro-test';
+      (function loop() {
+        $.get('https://energy-helmet.herokuapp.com/messages/' + channel).then(function(data) {
+          $('#messages').html(messagesTemplate({ messages: data }));
+
+          setTimeout(loop, 500);
+        });
+      })();
+    </script>
+  </body>
+</html>

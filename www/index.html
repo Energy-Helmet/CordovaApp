@@ -1,16 +1,66 @@
-<!DOCTYPE html>
+
 <html>
   <head>
-    <script src="vendor/js/jquery.js"></script>
-    <script src="vendor/js/lodash.js"></script>
-    <link rel="stylesheet" href="vendor/css/bootstrap.css">
-    <link rel="stylesheet" href="style.css">
-    <script>$.support.cors = true;</script>
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="./javascripts/createjs-2015.11.26.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js"></script>
+    <script src="./javascripts/jquery-2.2.3.min.js"></script>
+    <script src="./javascripts/jquery.loadTemplate-1.5.7.min.js"></script>
+
+
   </head>
-  <body style="background:black">
-    <div id="messages" style="color:white"></div>
+  <body onload="init();" style="margin: 0px">
+    <canvas id="main_canvas"></canvas>
+
+    <div id="slack_overlay" style="position: absolute;">
+
+    </div>
+
+    <div id="template-container" style="color: white; position: absolute; top: 20px;">
+    </div>
+
+    <script>
+      //set the width to fullscreen
+      var screen_width = $(window).width();
+      var screen_height = $(window).height();
+      $("#main_canvas").attr("width", screen_width);
+      $("#main_canvas").attr("height", screen_height);
+      var rect = new createjs.Shape();
+      rect.graphics.beginFill("#000").drawRect(0, 0, screen_width, screen_height);
+      var cursor = new createjs.Shape();
+      var stage = new createjs.Stage("main_canvas");
+      label = new createjs.Text("Demo text \n More text", "24px Arial", "white");
+      label.x = label.y = 10;
+      function init() {
+        cursor.graphics.beginFill("white").drawCircle(0, 0, 5);
+        cursor.x = 100;
+        cursor.y = 10;
+        stage.addChild(rect);
+        stage.addChild(cursor);
+        stage.addChild(label);
+
+        stage.update();
+      }
+      function update_cursor(x, y){
+        //draw the cursor where it should be at
+        cursor.x = x;
+        cursor.y = y;
+        //stage.scaleY = -1;
+        stage.update();
+      }
+      var theta = 0;
+      theta += 0.2;
+      createjs.Ticker.addEventListener("tick", handleTick);
+      function handleTick(event) {
+
+        cursor.x += theta;
+        cursor.y = Math.sin(cursor.x)*20 + 80;
+         // Actions carried out each tick (aka frame)
+         if (!event.paused) {
+             // Actions carried out when the Ticker is not paused.
+             stage.update();
+         }
+      }
+    </script>
 
     <script id="messages-template" type="text/template">
       <% messages.forEach(function(message) { %>
@@ -22,12 +72,14 @@
     </script>
 
     <script type="text/javascript">
+
       var messagesTemplate = _.template($('#messages-template').html());
 
       var channel = document.location.search.slice(1);
+      channel     = 'helmetbro-test';
       (function loop() {
         $.get('https://energy-helmet.herokuapp.com/messages/' + channel).then(function(data) {
-          $('#messages').html(messagesTemplate({ messages: data }));
+          $('#template-container').html(messagesTemplate({ messages: data }));
 
           setTimeout(loop, 500);
         });

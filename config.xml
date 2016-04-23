@@ -22,5 +22,10 @@
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
+        <preference name="orientation" value="landscape" />
+    </platform>
+
+    <platform name="android" >
+        <preference name="orientation" value="landscape" />
     </platform>
 </widget>
