@@ -22,8 +22,8 @@
     <platform name="android">
         <allow-intent href="market:*" />
         <framework src="compile 'com.punchthrough.bean.sdk:sdk:2.0.0'" />
-        <preference name="android-minSdkVersion" value="22">
-        <preference name="android-targetSdkVersion" value="23">
+        <preference name="android-minSdkVersion" value="22" />
+        <preference name="android-targetSdkVersion" value="23" />
         <preference name="orientation" value="landscape" />
     </platform>
     <platform name="ios">

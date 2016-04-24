@@ -1,10 +1,12 @@
-
+<!DOCTYPE html>
 <html>
   <head>
     <script src="./javascripts/createjs-2015.11.26.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js"></script>
     <script src="./javascripts/jquery-2.2.3.min.js"></script>
     <script src="./javascripts/jquery.loadTemplate-1.5.7.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
     <style type="text/css">
       .slack_chat {
@@ -13,13 +15,21 @@
         top: 20px;
         transform: scaleY(-1);
       }
+
+      .gifz {
+        transform: scaleY(-1);
+      }
+
+      .message {
+        padding: 3px 0;
+      }
     </style>
 
   </head>
   <body onload="init();" style="margin: 0px; position: relative;">
     <canvas id="main_canvas"></canvas>
 
-    <div style="position: absolute; top:20px; right:20px; height:100px; width:100px">
+    <div class="gifz" style="position: absolute; top:20px; right:20px; height:100px; width:100px">
       <div id="slide-0">
         <img src="images/earth.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
         <img src="images/grid-scan.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
@@ -73,23 +83,11 @@
       var rect = new createjs.Shape();
       rect.graphics.beginFill("#000").drawRect(0, 0, screen_width, screen_height);
 
-      var cursor = new createjs.Shape();
-      var stage  = new createjs.Stage("main_canvas");
+      var stage = new createjs.Stage("main_canvas");
 
       function init() {
-        cursor.graphics.beginFill("white").drawCircle(0, 0, 5);
-        cursor.x = 100;
-        cursor.y = 10;
         stage.addChild(rect);
-        stage.addChild(cursor);
 
-        stage.update();
-      }
-
-      function update_cursor(x, y){
-        //draw the cursor where it should be at
-        cursor.x = x;
-        cursor.y = y;
         stage.update();
       }
 
@@ -97,8 +95,6 @@
       theta += 0.2;
 
       createjs.Ticker.addEventListener("tick", function (event) {
-        cursor.x += theta;
-        cursor.y = Math.sin(cursor.x) * 20 + 80;
         // Actions carried out each tick (aka frame)
         if (!event.paused) {
           // Actions carried out when the Ticker is not paused.
@@ -109,7 +105,7 @@
 
       function position_slack_chat(){
         var slack_chat_height = $("#template-container").height();
-        var new_height = screen_height - slack_chat_height;
+        var new_height = screen_height - slack_chat_height - 3;
         $("#template-container").css("top", new_height + "px");
       }
 
@@ -122,7 +118,7 @@
       <% messages.forEach(function(message) { %>
         <div class="message">
           <span class="from"><img src="<%= message.from.avatar %>" alt="<%= message.from.name %>" class="img-circle"></span>
-          <span class="message"><%- message.text %></span>
+          <span class="message"><%= message.text %></span>
         </div>
       <% }); %>
     </script>
