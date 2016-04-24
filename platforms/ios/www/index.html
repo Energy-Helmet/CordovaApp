@@ -2,7 +2,6 @@
 <html>
   <head>
     <script src="cordova.js"></script>
-
     <script src="./javascripts/createjs-2015.11.26.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js"></script>
     <script src="./javascripts/jquery-2.2.3.min.js"></script>
@@ -27,10 +26,10 @@
       }
 
       .map-container {
-        transform: scale(1, -1);
+        transform: scaleY(-1);
       }
     </style>
-
+    <link rel="stylesheet" href="style.css">
   </head>
   <body onload="init();" style="margin: 0px; position: relative;">
     <canvas id="main_canvas"></canvas>
@@ -66,59 +65,19 @@
                 $('#slide-' + i).hide();
               }
             }
+
+            if (window.beansInterface.getBeansHaveData()) {
+                console.log(window.beansInterface.getBeansX() + ' | '
+                    + window.beansInterface.getBeansY() + ' | ' +
+                    + window.beansInterface.getBeansZ());
+            }
           }, 1000);
         })();
       </script>
     </div>
 
-    <div id="slack_overlay" style="position: absolute">
-
-    </div>
-
-    <div id="template-container" class="slack_chat">
-    </div>
-
-    <script>
-      var screen_width  = $(window).width();
-      var screen_height = $(window).height();
-
-      $("#main_canvas").attr("width", screen_width);
-      $("#main_canvas").attr("height", screen_height);
-
-      // black out the bg
-      var rect = new createjs.Shape();
-      rect.graphics.beginFill("#000").drawRect(0, 0, screen_width, screen_height);
-
-      var stage = new createjs.Stage("main_canvas");
-
-      function init() {
-        stage.addChild(rect);
-
-        stage.update();
-      }
-
-      var theta = 0;
-      theta += 0.2;
-
-      createjs.Ticker.addEventListener("tick", function (event) {
-        // Actions carried out each tick (aka frame)
-        if (!event.paused) {
-          // Actions carried out when the Ticker is not paused.
-          stage.update();
-        }
-      });
-
-
-      function position_slack_chat(){
-        var slack_chat_height = $("#template-container").height();
-        var new_height = screen_height - slack_chat_height - 3;
-        $("#template-container").css("top", new_height + "px");
-      }
-
-      $(function(){
-        position_slack_chat();
-      });
-    </script>
+    <div id="slack_overlay" style="position: absolute"></div>
+    <div id="template-container" class="slack_chat" style="position: absolute; bottom:20px; left:20px;"></div>
 
     <script id="messages-template" type="text/template">
       <% messages.forEach(function(message) { %>
@@ -130,7 +89,6 @@
     </script>
 
     <script type="text/javascript">
-
       var messagesTemplate = _.template($('#messages-template').html());
 
       var channel = document.location.search.slice(1);
@@ -146,7 +104,8 @@
     </script>
 
     <div class="map-container" style="position: absolute; bottom:20px; right:20px; height:100px; width:100px">
-      <img id="map" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px" class="img-circle">
+      <img id="the-map" style="position: absolute; top:0; right:0; height:100px; width:100px" class="img-circle map-rotation">
+      <img style="position: absolute; top:0; right:0; height:100px; width:100px" src="images/north.png" class="map-rotation">
     </div>
 
     <script type="text/javascript">
@@ -156,13 +115,13 @@
           navigator.compass.getCurrentHeading(function(heading) {
             navigator.geolocation.getCurrentPosition(function(pos) {
               var url = [
-                'https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyCboTbF6DqaVwzeGJrruX1gdzmh44MFCqk&zoom=1&size=100x100&&center=',
+                'https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyCboTbF6DqaVwzeGJrruX1gdzmh44MFCqk&zoom=14&size=100x100&&center=',
                 pos.coords.latitude, ',', pos.coords.longitude,
                 '&'
               ].join('');
-              $('#map').attr('src', url);
-              $('#map').css({
-                transform: 'rotate(' + heading.magneticHeading + 'deg)'
+              $('#the-map').attr('src', url);
+              $('.map-rotation').css({
+                transform: 'rotate(' + (360 - heading.magneticHeading) + 'deg)'
               });
 
               setTimeout(loop, 1000);
@@ -171,5 +130,7 @@
         })();
       }, false);
     </script>
+
+    <script src="script.js"></script>
   </body>
 </html>
