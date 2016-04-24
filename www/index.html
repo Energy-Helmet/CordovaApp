@@ -66,6 +66,12 @@
                 $('#slide-' + i).hide();
               }
             }
+
+            if (window.beansInterface.getBeansHaveData()) {
+                console.log(window.beansInterface.getBeansX() + ' | '
+                    + window.beansInterface.getBeansY() + ' | ' +
+                    + window.beansInterface.getBeansZ());
+            }
           }, 1000);
         })();
       </script>
