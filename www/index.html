@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="cordova.js"></script>
+
     <script src="./javascripts/createjs-2015.11.26.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js"></script>
     <script src="./javascripts/jquery-2.2.3.min.js"></script>
@@ -22,6 +24,10 @@
 
       .message {
         padding: 3px 0;
+      }
+
+      .map-container {
+        transform: scale(1, -1);
       }
     </style>
 
@@ -137,6 +143,37 @@
           position_slack_chat();
         });
       })();
+    </script>
+
+    <div class="map-container" style="position: absolute; bottom:20px; left:20px; height:100px; width:100px">
+      <span id="debug"></span>
+    </div>
+
+    <div class="map-container" style="position: absolute; bottom:20px; right:20px; height:100px; width:100px">
+      <img id="map" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px" class="img-circle">
+    </div>
+
+    <script type="text/javascript">
+      document.addEventListener("deviceready", function() {
+        var noop = function() {};
+        (function loop() {
+          navigator.compass.getCurrentHeading(function(heading) {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+              var url = [
+                'https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyCboTbF6DqaVwzeGJrruX1gdzmh44MFCqk&zoom=1&size=100x100&&center=',
+                pos.coords.latitude, ',', pos.coords.longitude,
+                '&'
+              ].join('');
+              $('#map').attr('src', url);
+              $('#map').css({
+                transform: 'rotate(' + heading.magneticHeading + 'deg)'
+              });
+
+              setTimeout(loop, 1000);
+            }, noop);
+          }, noop);
+        })();
+      }, false);
     </script>
   </body>
 </html>
