@@ -41,6 +41,6 @@ module.exports.metadata =
     "cordova-plugin-device-orientation": "1.0.3",
     "cordova-plugin-geolocation": "2.2.0",
     "cordova-plugin-compat": "1.0.0"
-}
+};
 // BOTTOM OF METADATA
 });

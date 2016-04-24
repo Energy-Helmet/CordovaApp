@@ -1,10 +1,13 @@
-
+<!DOCTYPE html>
 <html>
   <head>
+    <script src="cordova.js"></script>
     <script src="./javascripts/createjs-2015.11.26.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js"></script>
     <script src="./javascripts/jquery-2.2.3.min.js"></script>
     <script src="./javascripts/jquery.loadTemplate-1.5.7.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
     <style type="text/css">
       .slack_chat {
@@ -13,13 +16,50 @@
         top: 20px;
         transform: scaleY(-1);
       }
-    </style>
 
+      .gifz {
+        transform: scaleY(-1);
+      }
+
+      .message {
+        padding: 3px 0;
+      }
+
+      .map-container {
+        transform: scaleY(-1);
+      }
+    </style>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body onload="init();" style="margin: 0px; position: relative;">
     <canvas id="main_canvas"></canvas>
+    <script>
+      (function() {
+        setInterval(function() {
+            var canvas = document.getElementById('main_canvas');
+            var context = canvas.getContext('2d');
+            context.font = '12pt Calibri';
+            context.strokeStyle = '#FFFFFF';
+            context.fillStyle = '#FFFFFF';
+            context.clearRect(0, 0, canvas.width, canvas.height);
 
-    <div style="position: absolute; top:20px; right:20px; height:100px; width:100px">
+            if (window.beansInterface.getBeansHaveData()) {
+                var x = window.beansInterface.getBeansX();
+                var y = window.beansInterface.getBeansY();
+                var z = window.beansInterface.getBeansZ();
+
+                context.fillText(Number(x).toFixed(6), 20, 20);
+                context.fillText(Number(y).toFixed(6), 20, 50);
+                context.fillText(Number(z).toFixed(6), 20, 80);
+            }
+            else {
+                context.fillText('Loading...', 10, 20);
+            }
+        }, 250);
+      })();
+    </script>
+
+    <div class="gifz" style="position: absolute; top:20px; right:20px; height:100px; width:100px">
       <div id="slide-0">
         <img src="images/earth.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
         <img src="images/grid-scan.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
@@ -50,91 +90,24 @@
                 $('#slide-' + i).hide();
               }
             }
-
-            if (window.beansInterface.getBeansHaveData()) {
-                console.log(window.beansInterface.getBeansX() + ' | '
-                    + window.beansInterface.getBeansY() + ' | ' +
-                    + window.beansInterface.getBeansZ());
-            }
           }, 1000);
         })();
       </script>
     </div>
 
-    <div id="slack_overlay" style="position: absolute">
-
-    </div>
-
-    <div id="template-container" class="slack_chat">
-    </div>
-
-    <script>
-      var screen_width  = $(window).width();
-      var screen_height = $(window).height();
-
-      $("#main_canvas").attr("width", screen_width);
-      $("#main_canvas").attr("height", screen_height);
-
-      // black out the bg
-      var rect = new createjs.Shape();
-      rect.graphics.beginFill("#000").drawRect(0, 0, screen_width, screen_height);
-
-      var cursor = new createjs.Shape();
-      var stage  = new createjs.Stage("main_canvas");
-
-      function init() {
-        cursor.graphics.beginFill("white").drawCircle(0, 0, 5);
-        cursor.x = 100;
-        cursor.y = 10;
-        stage.addChild(rect);
-        stage.addChild(cursor);
-
-        stage.update();
-      }
-
-      function update_cursor(x, y){
-        //draw the cursor where it should be at
-        cursor.x = x;
-        cursor.y = y;
-        stage.update();
-      }
-
-      var theta = 0;
-      theta += 0.2;
-
-      createjs.Ticker.addEventListener("tick", function (event) {
-        cursor.x += theta;
-        cursor.y = Math.sin(cursor.x) * 20 + 80;
-        // Actions carried out each tick (aka frame)
-        if (!event.paused) {
-          // Actions carried out when the Ticker is not paused.
-          stage.update();
-        }
-      });
-
-
-      function position_slack_chat(){
-        var slack_chat_height = $("#template-container").height();
-        var new_height = screen_height - slack_chat_height;
-        $("#template-container").css("top", new_height + "px");
-      }
-
-      $(function(){
-        position_slack_chat();
-      });
-    </script>
+    <div id="slack_overlay" style="position: absolute"></div>
+    <div id="template-container" class="slack_chat" style="position: absolute; bottom:20px; left:20px;"></div>
 
     <script id="messages-template" type="text/template">
       <% messages.forEach(function(message) { %>
         <div class="message">
           <span class="from"><img src="<%= message.from.avatar %>" alt="<%= message.from.name %>" class="img-circle"></span>
-          <span class="message"><%- message.text %></span>
+          <span class="message"><%= message.text %></span>
         </div>
       <% }); %>
     </script>
 
     <script type="text/javascript">
-
       var messagesTemplate = _.template($('#messages-template').html());
 
       var channel = document.location.search.slice(1);
@@ -144,19 +117,38 @@
           $('#template-container').html(messagesTemplate({ messages: data }));
 
           setTimeout(loop, 500);
-          position_slack_chat();
         });
       })();
     </script>
 
-    <script>
-      var recognition = new webkitSpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.onresult = function(event) {
-        console.log(event)
-      }
-      recognition.start();
+    <div class="map-container" style="position: absolute; bottom:20px; right:20px; height:100px; width:100px">
+      <img id="the-map" style="position: absolute; top:0; right:0; height:100px; width:100px" class="img-circle map-rotation">
+      <img style="position: absolute; top:0; right:0; height:100px; width:100px" src="images/north.png" class="map-rotation">
+    </div>
+
+    <script type="text/javascript">
+      document.addEventListener("deviceready", function() {
+        var noop = function() {};
+        (function loop() {
+          navigator.compass.getCurrentHeading(function(heading) {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+              var url = [
+                'https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyCboTbF6DqaVwzeGJrruX1gdzmh44MFCqk&zoom=14&size=100x100&&center=',
+                pos.coords.latitude, ',', pos.coords.longitude,
+                '&'
+              ].join('');
+              $('#the-map').attr('src', url);
+              $('.map-rotation').css({
+                transform: 'rotate(' + (360 - heading.magneticHeading) + 'deg)'
+              });
+
+              setTimeout(loop, 1000);
+            }, noop);
+          }, noop);
+        })();
+      }, false);
     </script>
+
+    <script src="script.js"></script>
   </body>
 </html>
