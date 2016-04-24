@@ -38,28 +38,39 @@
   <body style="margin: 0px; position: relative;">
     <div id="invis" style="display: none"></div>
 
+    <div class="bean-readout" id="bean_z">Loading...</div>
+    <div class="bean-readout" id="bean_y"></div>
+    <div class="bean-readout" id="bean_x"></div>
     <canvas id="main_canvas"></canvas>
     <script>
       (function() {
         setInterval(function() {
-            var canvas = document.getElementById('main_canvas');
-            var context = canvas.getContext('2d');
-            context.font = '12pt Calibri';
-            context.strokeStyle = '#FFFFFF';
-            context.fillStyle = '#FFFFFF';
-            context.clearRect(0, 0, canvas.width, canvas.height);
-
+            // var canvas = document.getElementById('main_canvas');
+            // var context = canvas.getContext('2d');
+            // context.font = '12pt Calibri';
+            // context.strokeStyle = '#FFFFFF';
+            // context.fillStyle = '#FFFFFF';
+            // context.clearRect(0, 0, canvas.width, canvas.height);
+            //
+            // if (window.beansInterface.getBeansHaveData()) {
+            //     var x = window.beansInterface.getBeansX();
+            //     var y = window.beansInterface.getBeansY();
+            //     var z = window.beansInterface.getBeansZ();
+            //
+            //     context.fillText(Number(x).toFixed(6), 20, 20);
+            //     context.fillText(Number(y).toFixed(6), 20, 50);
+            //     context.fillText(Number(z).toFixed(6), 20, 80);
+            // }
+            // else {
+            //     context.fillText('Loading...', 20, 20);
+            // }
             if (window.beansInterface.getBeansHaveData()) {
                 var x = window.beansInterface.getBeansX();
                 var y = window.beansInterface.getBeansY();
                 var z = window.beansInterface.getBeansZ();
-
-                context.fillText(Number(x).toFixed(6), 20, 20);
-                context.fillText(Number(y).toFixed(6), 20, 50);
-                context.fillText(Number(z).toFixed(6), 20, 80);
-            }
-            else {
-                context.fillText('Loading...', 20, 20);
+                $('#bean_x').text('x: ' + Number(x).toFixed(6));
+                $('#bean_y').text('y: ' + Number(y).toFixed(6));
+                $('#bean_z').text('z: ' + Number(z).toFixed(6));
             }
         }, 250);
       })();

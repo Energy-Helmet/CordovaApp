@@ -5,6 +5,13 @@
   transform: scaleY(-1);
 }
 
+.bean-readout {
+    transform: scaleY(-1);
+    color: #FFFFFF;
+    padding-left: 16px;
+    padding-bottom: 4px;
+}
+
 .gifz {
   transform: scaleY(-1);
 }
