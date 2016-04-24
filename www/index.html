@@ -35,10 +35,35 @@
     </style>
     <link rel="stylesheet" href="style.css">
   </head>
-  <body onload="init();" style="margin: 0px; position: relative;">
+  <body style="margin: 0px; position: relative;">
     <div id="invis" style="display: none"></div>
 
     <canvas id="main_canvas"></canvas>
+    <script>
+      (function() {
+        setInterval(function() {
+            var canvas = document.getElementById('main_canvas');
+            var context = canvas.getContext('2d');
+            context.font = '12pt Calibri';
+            context.strokeStyle = '#FFFFFF';
+            context.fillStyle = '#FFFFFF';
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (window.beansInterface.getBeansHaveData()) {
+                var x = window.beansInterface.getBeansX();
+                var y = window.beansInterface.getBeansY();
+                var z = window.beansInterface.getBeansZ();
+
+                context.fillText(Number(x).toFixed(6), 20, 20);
+                context.fillText(Number(y).toFixed(6), 20, 50);
+                context.fillText(Number(z).toFixed(6), 20, 80);
+            }
+            else {
+                context.fillText('Loading...', 20, 20);
+            }
+        }, 250);
+      })();
+    </script>
 
     <div class="gifz" style="position: absolute; top:20px; right:20px; height:100px; width:100px">
       <div id="slide-0" class="gifz-gif">
@@ -71,12 +96,6 @@
                 $('#slide-' + i).hide();
               }
             }
-
-            // if (window.beansInterface.getBeansHaveData()) {
-            //     console.log(window.beansInterface.getBeansX() + ' | '
-            //         + window.beansInterface.getBeansY() + ' | ' +
-            //         + window.beansInterface.getBeansZ());
-            // }
           }, 3000);
         })();
       </script>
@@ -104,7 +123,6 @@
           $('#template-container').html(messagesTemplate({ messages: data }));
 
           setTimeout(loop, 500);
-          // position_slack_chat();
         });
       })();
     </script>
