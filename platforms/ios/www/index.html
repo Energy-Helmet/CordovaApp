@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="cordova.js"></script>
+
+    <script src="./javascripts/createjs-2015.11.26.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js"></script>
+    <script src="./javascripts/jquery-2.2.3.min.js"></script>
+    <script src="./javascripts/jquery.loadTemplate-1.5.7.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <style type="text/css">
+      .slack_chat {
+        color: white;
+        position: absolute;
+        top: 20px;
+        transform: scaleY(-1);
+      }
+
+      .gifz {
+        transform: scaleY(-1);
+      }
+
+      .message {
+        padding: 3px 0;
+      }
+
+      .map-container {
+        transform: scale(1, -1);
+      }
+    </style>
+
+  </head>
+  <body onload="init();" style="margin: 0px; position: relative;">
+    <canvas id="main_canvas"></canvas>
+
+    <div class="gifz" style="position: absolute; top:20px; right:20px; height:100px; width:100px">
+      <div id="slide-0">
+        <img src="images/earth.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
+        <img src="images/grid-scan.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
+      </div>
+
+      <div id="slide-1" style="display: none">
+        <img src="images/eye.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
+      </div>
+
+      <div id="slide-2" style="display: none">
+        <img src="images/spaaaaace.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
+      </div>
+
+      <div id="slide-3" style="display: none">
+        <img src="images/loading.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
+      </div>
+
+      <script>
+        (function() {
+          var first = 0;
+          var last  = 3;
+          setInterval(function() {
+            var toBeActive = Math.floor(Math.random() * last + 1) + first;
+            for (var i = 0; i <= last; i++) {
+              if (i == toBeActive) {
+                $('#slide-' + i).show();
+              } else {
+                $('#slide-' + i).hide();
+              }
+            }
+          }, 1000);
+        })();
+      </script>
+    </div>
+
+    <div id="slack_overlay" style="position: absolute">
+
+    </div>
+
+    <div id="template-container" class="slack_chat">
+    </div>
+
+    <script>
+      var screen_width  = $(window).width();
+      var screen_height = $(window).height();
+
+      $("#main_canvas").attr("width", screen_width);
+      $("#main_canvas").attr("height", screen_height);
+
+      // black out the bg
+      var rect = new createjs.Shape();
+      rect.graphics.beginFill("#000").drawRect(0, 0, screen_width, screen_height);
+
+      var stage = new createjs.Stage("main_canvas");
+
+      function init() {
+        stage.addChild(rect);
+
+        stage.update();
+      }
+
+      var theta = 0;
+      theta += 0.2;
+
+      createjs.Ticker.addEventListener("tick", function (event) {
+        // Actions carried out each tick (aka frame)
+        if (!event.paused) {
+          // Actions carried out when the Ticker is not paused.
+          stage.update();
+        }
+      });
+
+
+      function position_slack_chat(){
+        var slack_chat_height = $("#template-container").height();
+        var new_height = screen_height - slack_chat_height - 3;
+        $("#template-container").css("top", new_height + "px");
+      }
+
+      $(function(){
+        position_slack_chat();
+      });
+    </script>
+
+    <script id="messages-template" type="text/template">
+      <% messages.forEach(function(message) { %>
+        <div class="message">
+          <span class="from"><img src="<%= message.from.avatar %>" alt="<%= message.from.name %>" class="img-circle"></span>
+          <span class="message"><%= message.text %></span>
+        </div>
+      <% }); %>
+    </script>
+
+    <script type="text/javascript">
+
+      var messagesTemplate = _.template($('#messages-template').html());
+
+      var channel = document.location.search.slice(1);
+      channel     = 'helmetbro-test';
+      (function loop() {
+        $.get('https://energy-helmet.herokuapp.com/messages/' + channel).then(function(data) {
+          $('#template-container').html(messagesTemplate({ messages: data }));
+
+          setTimeout(loop, 500);
+          position_slack_chat();
+        });
+      })();
+    </script>
+
+    <div class="map-container" style="position: absolute; bottom:20px; right:20px; height:100px; width:100px">
+      <img id="map" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px" class="img-circle">
+    </div>
+
+    <script type="text/javascript">
+      document.addEventListener("deviceready", function() {
+        var noop = function() {};
+        (function loop() {
+          navigator.compass.getCurrentHeading(function(heading) {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+              var url = [
+                'https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyCboTbF6DqaVwzeGJrruX1gdzmh44MFCqk&zoom=1&size=100x100&&center=',
+                pos.coords.latitude, ',', pos.coords.longitude,
+                '&'
+              ].join('');
+              $('#map').attr('src', url);
+              $('#map').css({
+                transform: 'rotate(' + heading.magneticHeading + 'deg)'
+              });
+
+              setTimeout(loop, 1000);
+            }, noop);
+          }, noop);
+        })();
+      }, false);
+    </script>
+  </body>
+</html>
