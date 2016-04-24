@@ -98,7 +98,7 @@
       var messagesTemplate = _.template($('#messages-template').html());
 
       var channel = document.location.search.slice(1);
-      channel     = 'helmetbro-test';
+      channel     = 'energyhelmet';
       (function loop() {
         $.get('https://energy-helmet.herokuapp.com/messages/' + channel).then(function(data) {
           $('#template-container').html(messagesTemplate({ messages: data }));
