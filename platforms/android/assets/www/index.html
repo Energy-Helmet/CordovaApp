@@ -20,23 +20,38 @@
     <canvas id="main_canvas"></canvas>
 
     <div style="position: absolute; top:20px; right:20px; height:100px; width:100px">
-      <div id="slide-1">
+      <div id="slide-0">
         <img src="images/earth.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
         <img src="images/grid-scan.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
       </div>
 
-      <div id="slide-2" style="display: none">
+      <div id="slide-1" style="display: none">
         <img src="images/eye.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
       </div>
 
+      <div id="slide-2" style="display: none">
+        <img src="images/spaaaaace.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
+      </div>
+
+      <div id="slide-3" style="display: none">
+        <img src="images/loading.gif" alt="" style="position: absolute; top:0; right:0; height:100px; width:100px">
+      </div>
+
       <script>
-        var slide = 1;
-        var total = 2;
-        setInterval(function() {
-          $('#slide-' + slide++).hide();
-          if (slide == total) { slide = 1; }
-          $('#slide-' + slide).show();
-        }, 3000);
+        (function() {
+          var first = 0;
+          var last  = 3;
+          setInterval(function() {
+            var toBeActive = Math.floor(Math.random() * last + 1) + first;
+            for (var i = 0; i <= last; i++) {
+              if (i == toBeActive) {
+                $('#slide-' + i).show();
+              } else {
+                $('#slide-' + i).hide();
+              }
+            }
+          }, 1000);
+        })();
       </script>
     </div>
 
@@ -126,6 +141,16 @@
           position_slack_chat();
         });
       })();
+    </script>
+
+    <script>
+      var recognition = new webkitSpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.onresult = function(event) {
+        console.log(event)
+      }
+      recognition.start();
     </script>
   </body>
 </html>
