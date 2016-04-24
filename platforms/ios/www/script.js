@@ -116,8 +116,3 @@ function unZoomGifz() {
   });
 }
 
-
-zoomGifz()
-setTimeout(function() {
-  unZoomGifz()
-}, 5000)

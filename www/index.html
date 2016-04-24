@@ -36,6 +36,8 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body onload="init();" style="margin: 0px; position: relative;">
+    <div id="invis" style="display: none"></div>
+
     <canvas id="main_canvas"></canvas>
 
     <div class="gifz" style="position: absolute; top:20px; right:20px; height:100px; width:100px">
@@ -62,7 +64,6 @@
           var last  = 3;
           setInterval(function() {
             var toBeActive = Math.round(Math.random()*last + 1) - 1;
-            console.log(toBeActive)
             for (var i = 0; i <= last; i++) {
               if (i == toBeActive) {
                 $('#slide-' + i).show();
@@ -71,11 +72,11 @@
               }
             }
 
-            if (window.beansInterface.getBeansHaveData()) {
-                console.log(window.beansInterface.getBeansX() + ' | '
-                    + window.beansInterface.getBeansY() + ' | ' +
-                    + window.beansInterface.getBeansZ());
-            }
+            // if (window.beansInterface.getBeansHaveData()) {
+            //     console.log(window.beansInterface.getBeansX() + ' | '
+            //         + window.beansInterface.getBeansY() + ' | ' +
+            //         + window.beansInterface.getBeansZ());
+            // }
           }, 3000);
         })();
       </script>
@@ -103,7 +104,7 @@
           $('#template-container').html(messagesTemplate({ messages: data }));
 
           setTimeout(loop, 500);
-          position_slack_chat();
+          // position_slack_chat();
         });
       })();
     </script>
@@ -137,5 +138,11 @@
     </script>
 
     <script src="script.js"></script>
+
+    <script src="vendor/js/watson-speech.js"></script>
+    <!-- window.fetch pollyfill for IE/Edge & Older Chrome/FireFox -->
+    <script src="vendor/js/bower_components/fetch/fetch.js"></script>
+
+    <script src="watson.js"></script>
   </body>
 </html>
